@@ -11,7 +11,7 @@ func TestAkindo(t *testing.T) {
 		ac := NewAkindoClient()
 		a, err := ac.GetAccount()
 
-		assert.Equal(t, "", a)
+		assert.Equal(t, `{"accounts":[{"id":"101-009-15951441-001","tags":[]}]}`, a)
 		assert.Nil(t, err)
 	})
 }
