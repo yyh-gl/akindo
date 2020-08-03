@@ -5,27 +5,43 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
-	"os"
 )
 
-type AkindoClient struct{}
+const host = "https://api-fxpractice.oanda.com/v3"
 
-func NewAkindoClient() *AkindoClient {
-	return &AkindoClient{}
+type Akindo struct {
+	httpClient  *http.Client
+	accessToken string
 }
 
-func (ac AkindoClient) GetAccount() (string, error) {
-	url := "https://api-fxpractice.oanda.com/v3/accounts"
-	req, err := http.NewRequestWithContext(context.TODO(), http.MethodGet, url, nil)
-	if err != nil {
-		return "", fmt.Errorf("リクエスト作成に失敗: %w", err)
+func NewAkindo(httpClient *http.Client, accessToken string) *Akindo {
+	hc := http.DefaultClient
+	if httpClient != nil {
+		hc = httpClient
 	}
+	return &Akindo{
+		httpClient:  hc,
+		accessToken: accessToken,
+	}
+}
 
-	accessToken := os.Getenv("API_ACCESS_TOKEN")
-	req.Header.Add("Authorization", "Bearer "+accessToken)
+func (a Akindo) sendRequest(ctx context.Context, path string) (*http.Response, error) {
+	url := host + path
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
+	if err != nil {
+		return nil, fmt.Errorf("リクエスト作成に失敗: %w", err)
+	}
+	req.Header.Add("Authorization", "Bearer "+a.accessToken)
 
-	c := http.DefaultClient
-	resp, err := c.Do(req)
+	resp, err := a.httpClient.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("リクエスト実行に失敗: %w", err)
+	}
+	return resp, nil
+}
+
+func (a Akindo) GetAccount(ctx context.Context) (string, error) {
+	resp, err := a.sendRequest(ctx, "/accounts")
 	if err != nil {
 		return "", fmt.Errorf("リクエスト実行に失敗: %w", err)
 	}
@@ -38,18 +54,8 @@ func (ac AkindoClient) GetAccount() (string, error) {
 	return string(b), nil
 }
 
-func (ac AkindoClient) GetCandle() (string, error) {
-	url := "https://api-fxpractice.oanda.com/v3/accounts/101-009-15951441-001/candles/latest?candleSpecifications=USD_JPY:M1:BM"
-	req, err := http.NewRequestWithContext(context.TODO(), http.MethodGet, url, nil)
-	if err != nil {
-		return "", fmt.Errorf("リクエスト作成に失敗: %w", err)
-	}
-
-	accessToken := os.Getenv("API_ACCESS_TOKEN")
-	req.Header.Add("Authorization", "Bearer "+accessToken)
-
-	c := http.DefaultClient
-	resp, err := c.Do(req)
+func (a Akindo) GetCandle(ctx context.Context) (string, error) {
+	resp, err := a.sendRequest(ctx, "accounts/101-009-15951441-001/candles/latest?candleSpecifications=USD_JPY:M1:BM\"")
 	if err != nil {
 		return "", fmt.Errorf("リクエスト実行に失敗: %w", err)
 	}
