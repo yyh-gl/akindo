@@ -9,12 +9,14 @@ import (
 
 const host = "https://api-fxpractice.oanda.com/v3"
 
+// Akindo : Akindoクライアントの構造体
 type Akindo struct {
 	httpClient  *http.Client
 	accessToken string
 	accountID   string
 }
 
+// NewAkindo : Akindoクライアントを生成
 func NewAkindo(httpClient *http.Client, accessToken, accountID string) (*Akindo, error) {
 	hc := http.DefaultClient
 	if httpClient != nil {
@@ -28,6 +30,7 @@ func NewAkindo(httpClient *http.Client, accessToken, accountID string) (*Akindo,
 	}, nil
 }
 
+// sendRequest : OANDA APIへのリクエスト用共通処理
 func (a Akindo) sendRequest(ctx context.Context, path string) (*http.Response, error) {
 	url := host + path
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
@@ -43,6 +46,7 @@ func (a Akindo) sendRequest(ctx context.Context, path string) (*http.Response, e
 	return resp, nil
 }
 
+// GetAccount : アカウント情報を取得
 func (a Akindo) GetAccount(ctx context.Context) (string, error) {
 	resp, err := a.sendRequest(ctx, "/accounts")
 	if err != nil {
@@ -57,6 +61,7 @@ func (a Akindo) GetAccount(ctx context.Context) (string, error) {
 	return string(b), nil
 }
 
+// GetCandle : ろうそく足情報を取得
 func (a Akindo) GetCandle(ctx context.Context) (string, error) {
 	path := fmt.Sprintf("accounts/%s/candles/latest?candleSpecifications=USD_JPY:M1:BM", a.accountID)
 	resp, err := a.sendRequest(ctx, path)
