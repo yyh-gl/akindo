@@ -12,17 +12,20 @@ const host = "https://api-fxpractice.oanda.com/v3"
 type Akindo struct {
 	httpClient  *http.Client
 	accessToken string
+	accountID   string
 }
 
-func NewAkindo(httpClient *http.Client, accessToken string) *Akindo {
+func NewAkindo(httpClient *http.Client, accessToken, accountID string) (*Akindo, error) {
 	hc := http.DefaultClient
 	if httpClient != nil {
 		hc = httpClient
 	}
+
 	return &Akindo{
 		httpClient:  hc,
 		accessToken: accessToken,
-	}
+		accountID:   accountID,
+	}, nil
 }
 
 func (a Akindo) sendRequest(ctx context.Context, path string) (*http.Response, error) {
@@ -55,7 +58,8 @@ func (a Akindo) GetAccount(ctx context.Context) (string, error) {
 }
 
 func (a Akindo) GetCandle(ctx context.Context) (string, error) {
-	resp, err := a.sendRequest(ctx, "accounts/101-009-15951441-001/candles/latest?candleSpecifications=USD_JPY:M1:BM\"")
+	path := fmt.Sprintf("accounts/%s/candles/latest?candleSpecifications=USD_JPY:M1:BM", a.accountID)
+	resp, err := a.sendRequest(ctx, path)
 	if err != nil {
 		return "", fmt.Errorf("リクエスト実行に失敗: %w", err)
 	}
