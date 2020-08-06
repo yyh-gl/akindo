@@ -62,8 +62,8 @@ func (a Akindo) GetAccount(ctx context.Context) (string, error) {
 }
 
 // GetCandle : ろうそく足情報を取得
-func (a Akindo) GetCandle(ctx context.Context) (string, error) {
-	path := fmt.Sprintf("accounts/%s/candles/latest?candleSpecifications=USD_JPY:M1:BM", a.accountID)
+func (a Akindo) GetCandles(ctx context.Context, instrument string) (string, error) {
+	path := fmt.Sprintf("/accounts/%s/instruments/%s/candles", a.accountID, instrument)
 	resp, err := a.sendRequest(ctx, path)
 	if err != nil {
 		return "", fmt.Errorf("リクエスト実行に失敗: %w", err)
