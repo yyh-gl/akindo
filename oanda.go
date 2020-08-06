@@ -11,21 +11,21 @@ import (
 
 const host = "https://api-fxpractice.oanda.com/v3"
 
-// akindo : Akindoクライアントの構造体
-type akindo struct {
+// oandaClient : OANDAクライアントの構造体
+type oandaClient struct {
 	httpClient  *http.Client
 	accessToken string
 	accountID   string
 }
 
-// newAkindo : Akindoクライアントを生成
-func newAkindo(httpClient *http.Client, accessToken, accountID string) (*akindo, error) {
+// newOANDAClient : OANDAクライアントを生成
+func newOANDAClient(httpClient *http.Client, accessToken, accountID string) (*oandaClient, error) {
 	hc := http.DefaultClient
 	if httpClient != nil {
 		hc = httpClient
 	}
 
-	return &akindo{
+	return &oandaClient{
 		httpClient:  hc,
 		accessToken: accessToken,
 		accountID:   accountID,
@@ -33,7 +33,7 @@ func newAkindo(httpClient *http.Client, accessToken, accountID string) (*akindo,
 }
 
 // sendRequest : OANDA APIへのリクエスト用共通処理
-func (a akindo) sendRequest(ctx context.Context, path string) (*http.Response, error) {
+func (a oandaClient) sendRequest(ctx context.Context, path string) (*http.Response, error) {
 	url := host + path
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
 	if err != nil {
@@ -49,7 +49,7 @@ func (a akindo) sendRequest(ctx context.Context, path string) (*http.Response, e
 }
 
 // getAccount : アカウント情報を取得
-func (a akindo) getAccount(ctx context.Context) (string, error) {
+func (a oandaClient) getAccount(ctx context.Context) (string, error) {
 	resp, err := a.sendRequest(ctx, "/accounts")
 	if err != nil {
 		return "", fmt.Errorf("リクエスト実行に失敗: %w", err)
@@ -86,7 +86,7 @@ type (
 )
 
 // getCandle : ローソク足情報を取得
-func (a akindo) getCandles(ctx context.Context, instrument string) (*candleSticks, error) {
+func (a oandaClient) getCandles(ctx context.Context, instrument string) (*candleSticks, error) {
 	type response struct {
 		Instrument  string       `json:"instrument"`
 		Granularity string       `json:"granularity"`

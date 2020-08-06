@@ -12,17 +12,17 @@ import (
 var accessToken = os.Getenv("API_ACCESS_TOKEN")
 var accountID = os.Getenv("ACCOUNT_ID")
 
-func TestAkindo(t *testing.T) {
-	t.Run("Akindoクライアントを取得できる", func(t *testing.T) {
-		t.Run("HTTPクライアントを渡さずにAkindoクライアントを取得できる", func(t *testing.T) {
-			a, err := newAkindo(nil, accessToken, accountID)
+func TestOANDA(t *testing.T) {
+	t.Run("OANDAクライアントを取得できる", func(t *testing.T) {
+		t.Run("HTTPクライアントを渡さずにOANDAクライアントを取得できる", func(t *testing.T) {
+			a, err := newOANDAClient(nil, accessToken, accountID)
 
 			assert.NotNil(t, a)
 			assert.Nil(t, err)
 		})
 
-		t.Run("HTTPクライアントを渡してAkindoクライアントを取得できる", func(t *testing.T) {
-			a, err := newAkindo(http.DefaultClient, accessToken, accountID)
+		t.Run("HTTPクライアントを渡してOANDAクライアントを取得できる", func(t *testing.T) {
+			a, err := newOANDAClient(http.DefaultClient, accessToken, accountID)
 
 			assert.NotNil(t, a)
 			assert.Nil(t, err)
@@ -30,7 +30,7 @@ func TestAkindo(t *testing.T) {
 	})
 
 	t.Run("アカウント情報を取得できる", func(t *testing.T) {
-		a, _ := newAkindo(nil, accessToken, accountID)
+		a, _ := newOANDAClient(nil, accessToken, accountID)
 		ac, err := a.getAccount(context.TODO())
 
 		assert.Equal(t, `{"accounts":[{"id":"`+accountID+`","tags":[]}]}`, ac)
@@ -38,7 +38,7 @@ func TestAkindo(t *testing.T) {
 	})
 
 	t.Run("ローソク足情報を取得できる", func(t *testing.T) {
-		a, _ := newAkindo(nil, accessToken, accountID)
+		a, _ := newOANDAClient(nil, accessToken, accountID)
 		cs, err := a.getCandles(context.TODO(), "USD_JPY")
 
 		// ローソク足情報はリアルタイムに変わっていくので、
