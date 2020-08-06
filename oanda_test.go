@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"net/http"
 	"os"
 	"testing"
 
@@ -14,23 +13,14 @@ var accountID = os.Getenv("ACCOUNT_ID")
 
 func TestOANDA(t *testing.T) {
 	t.Run("OANDAクライアントを取得できる", func(t *testing.T) {
-		t.Run("HTTPクライアントを渡さずにOANDAクライアントを取得できる", func(t *testing.T) {
-			a, err := newOANDAClient(nil, accessToken, accountID)
+		a, err := newOANDAClient(accessToken, accountID)
 
-			assert.NotNil(t, a)
-			assert.Nil(t, err)
-		})
-
-		t.Run("HTTPクライアントを渡してOANDAクライアントを取得できる", func(t *testing.T) {
-			a, err := newOANDAClient(http.DefaultClient, accessToken, accountID)
-
-			assert.NotNil(t, a)
-			assert.Nil(t, err)
-		})
+		assert.NotNil(t, a)
+		assert.Nil(t, err)
 	})
 
 	t.Run("アカウント情報を取得できる", func(t *testing.T) {
-		a, _ := newOANDAClient(nil, accessToken, accountID)
+		a, _ := newOANDAClient(accessToken, accountID)
 		ac, err := a.getAccount(context.TODO())
 
 		assert.Equal(t, `{"accounts":[{"id":"`+accountID+`","tags":[]}]}`, ac)
@@ -38,7 +28,7 @@ func TestOANDA(t *testing.T) {
 	})
 
 	t.Run("ローソク足情報を取得できる", func(t *testing.T) {
-		a, _ := newOANDAClient(nil, accessToken, accountID)
+		a, _ := newOANDAClient(accessToken, accountID)
 		cs, err := a.getCandles(context.TODO(), "USD_JPY")
 
 		// ローソク足情報はリアルタイムに変わっていくので、

@@ -19,14 +19,9 @@ type oandaClient struct {
 }
 
 // newOANDAClient : OANDAクライアントを生成
-func newOANDAClient(httpClient *http.Client, accessToken, accountID string) (*oandaClient, error) {
-	hc := http.DefaultClient
-	if httpClient != nil {
-		hc = httpClient
-	}
-
+func newOANDAClient(accessToken, accountID string) (*oandaClient, error) {
 	return &oandaClient{
-		httpClient:  hc,
+		httpClient:  http.DefaultClient,
 		accessToken: accessToken,
 		accountID:   accountID,
 	}, nil
