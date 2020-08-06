@@ -85,7 +85,7 @@ type (
 	CandleSticks []*CandleStick
 )
 
-// GetCandle : ろうそく足情報を取得
+// GetCandle : ローソク足情報を取得
 func (a Akindo) GetCandles(ctx context.Context, instrument string) (*CandleSticks, error) {
 	type response struct {
 		Instrument  string       `json:"instrument"`

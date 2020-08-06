@@ -37,11 +37,11 @@ func TestAkindo(t *testing.T) {
 		assert.Nil(t, err)
 	})
 
-	t.Run("ろうそく足情報を取得できる", func(t *testing.T) {
+	t.Run("ローソク足情報を取得できる", func(t *testing.T) {
 		a, _ := NewAkindo(nil, accessToken, accountID)
 		cs, err := a.GetCandles(context.TODO(), "USD_JPY")
 
-		// ろうそく足情報はリアルタイムに変わっていくので、
+		// ローソク足情報はリアルタイムに変わっていくので、
 		// エラーが出ていないことおよび各フィールドが空でないことだけを確認
 		assert.Nil(t, err)
 		for _, c := range *cs {
