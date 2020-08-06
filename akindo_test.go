@@ -4,7 +4,6 @@ import (
 	"context"
 	"net/http"
 	"os"
-	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -40,10 +39,19 @@ func TestAkindo(t *testing.T) {
 
 	t.Run("ろうそく足情報を取得できる", func(t *testing.T) {
 		a, _ := NewAkindo(nil, accessToken, accountID)
-		c, err := a.GetCandles(context.TODO(), "USD_JPY")
+		cs, err := a.GetCandles(context.TODO(), "USD_JPY")
 
-		// ろうそく足情報はリアルタイムに変わっていくので、レスポンスの一部分だけを比較
-		assert.True(t, strings.Contains(c, `{"instrument":"USD_JPY","granularity":"S5","candles"`))
+		// ろうそく足情報はリアルタイムに変わっていくので、
+		// エラーが出ていないことおよび各フィールドが空でないことだけを確認
 		assert.Nil(t, err)
+		for _, c := range *cs {
+			//assert.NotEmpty(t, c.Complete) // Completeにはfalse（ゼロ値）が入ることがあるため確認しない
+			assert.NotEmpty(t, c.Volume)
+			assert.NotEmpty(t, c.Time)
+			assert.NotEmpty(t, c.Prices.Open)
+			assert.NotEmpty(t, c.Prices.Highest)
+			assert.NotEmpty(t, c.Prices.Lowest)
+			assert.NotEmpty(t, c.Prices.Closing)
+		}
 	})
 }
