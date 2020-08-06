@@ -8,28 +8,28 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-var accessToken = os.Getenv("API_ACCESS_TOKEN")
-var accountID = os.Getenv("ACCOUNT_ID")
-
 func TestOANDA(t *testing.T) {
-	t.Run("OANDAクライアントを取得できる", func(t *testing.T) {
-		a, err := newOANDAClient(accessToken, accountID)
+	var at = os.Getenv("API_ACCESS_TOKEN")
+	var id = os.Getenv("ACCOUNT_ID")
 
-		assert.NotNil(t, a)
+	t.Run("OANDAクライアントを取得できる", func(t *testing.T) {
+		oc, err := newOANDAClient(at, id)
+
+		assert.NotNil(t, oc)
 		assert.Nil(t, err)
 	})
 
 	t.Run("アカウント情報を取得できる", func(t *testing.T) {
-		a, _ := newOANDAClient(accessToken, accountID)
-		ac, err := a.getAccount(context.TODO())
+		oc, _ := newOANDAClient(at, id)
+		ac, err := oc.getAccount(context.TODO())
 
-		assert.Equal(t, `{"accounts":[{"id":"`+accountID+`","tags":[]}]}`, ac)
+		assert.Equal(t, `{"accounts":[{"id":"`+id+`","tags":[]}]}`, ac)
 		assert.Nil(t, err)
 	})
 
 	t.Run("ローソク足情報を取得できる", func(t *testing.T) {
-		a, _ := newOANDAClient(accessToken, accountID)
-		cs, err := a.getCandles(context.TODO(), "USD_JPY")
+		oc, _ := newOANDAClient(at, id)
+		cs, err := oc.getCandles(context.TODO(), "USD_JPY")
 
 		// ローソク足情報はリアルタイムに変わっていくので、
 		// エラーが出ていないことおよび各フィールドが空でないことだけを確認
