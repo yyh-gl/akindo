@@ -18,8 +18,19 @@ func New(oc *oanda.Client, instrument string) *Akindo {
 	}
 }
 
-// check : 価格変動を確認
-func (a Akindo) check() {}
+//// GoToTrade : トレード開始
+//func (a Akindo) GoToTrade(ctx context.Context) error {
+//	for {
+//		a.check()
+//	}
+//
+//	return nil
+//}
+
+// judge : 価格変動を確認して次のアクションを決定
+func (a Akindo) judge() judgeResult {
+	return judgeResultWait
+}
 
 // buy : 購入
 func (a Akindo) buy() {}
