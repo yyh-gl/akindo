@@ -8,8 +8,8 @@ import (
 )
 
 func TestAkindo(t *testing.T) {
-	var at = os.Getenv("API_ACCESS_TOKEN")
-	var id = os.Getenv("ACCOUNT_ID")
+	at := os.Getenv("API_ACCESS_TOKEN")
+	id := os.Getenv("ACCOUNT_ID")
 
 	t.Run("商売人を取得できる", func(t *testing.T) {
 		oc := newOANDAClient(at, id)
