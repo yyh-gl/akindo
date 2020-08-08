@@ -19,12 +19,12 @@ type oandaClient struct {
 }
 
 // newOANDAClient : OANDAクライアントを生成
-func newOANDAClient(accessToken, accountID string) (*oandaClient, error) {
+func newOANDAClient(accessToken, accountID string) *oandaClient {
 	return &oandaClient{
 		httpClient:  http.DefaultClient,
 		accessToken: accessToken,
 		accountID:   accountID,
-	}, nil
+	}
 }
 
 // sendRequest : OANDA APIへのリクエスト用共通処理
