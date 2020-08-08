@@ -2,31 +2,30 @@ package akindo
 
 import (
 	"context"
-	"log"
-	"os"
 
 	"github.com/yyh-gl/fx-auto-trader/oanda"
 )
 
 // Akindo : 商売人を表す構造体
 type Akindo struct {
+	adventureBookWriter
+
 	oandaClient *oanda.Client
-	logger      *log.Logger
 	instrument  string
 }
 
 // New : 商売人召喚
 func New(oc *oanda.Client, instrument string) *Akindo {
 	return &Akindo{
-		oandaClient: oc,
-		logger:      log.New(os.Stdout, "Akindo", log.LstdFlags),
-		instrument:  instrument,
+		oandaClient:         oc,
+		adventureBookWriter: newAdventureBookWriter(),
+		instrument:          instrument,
 	}
 }
 
 // GoToTrade : トレード開始
 func (a Akindo) GoToTrade(ctx context.Context) error {
-	a.logger.Println("Start trade")
+	a.WriteTradeLog("Start trade")
 
 exitLoop:
 	for {
@@ -39,16 +38,16 @@ exitLoop:
 		switch result := a.judge(); result {
 		case judgeResultBuy:
 			a.buy()
-			a.logger.Println("Buy")
+			a.WriteTradeLog("Buy")
 		case judgeResultSell:
 			a.sell()
-			a.logger.Println("Sell")
+			a.WriteTradeLog("Sell")
 		default:
-			a.logger.Println("...")
+			a.WriteTradeLog("...")
 		}
 	}
 
-	a.logger.Println("Finish trade")
+	a.WriteTradeLog("Finish trade")
 	return nil
 }
 
