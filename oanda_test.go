@@ -9,8 +9,8 @@ import (
 )
 
 func TestOANDA(t *testing.T) {
-	var at = os.Getenv("API_ACCESS_TOKEN")
-	var id = os.Getenv("ACCOUNT_ID")
+	at := os.Getenv("API_ACCESS_TOKEN")
+	id := os.Getenv("ACCOUNT_ID")
 
 	t.Run("OANDAクライアントを取得できる", func(t *testing.T) {
 		oc, err := newOANDAClient(at, id)
