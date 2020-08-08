@@ -1,4 +1,4 @@
-package main
+package oanda
 
 import (
 	"context"
@@ -13,13 +13,13 @@ func TestOANDA(t *testing.T) {
 	id := os.Getenv("ACCOUNT_ID")
 
 	t.Run("OANDAクライアントを取得できる", func(t *testing.T) {
-		oc := newOANDAClient(at, id)
+		oc := NewClient(at, id)
 
 		assert.NotNil(t, oc)
 	})
 
 	t.Run("アカウント情報を取得できる", func(t *testing.T) {
-		oc := newOANDAClient(at, id)
+		oc := NewClient(at, id)
 		ac, err := oc.getAccount(context.TODO())
 
 		assert.Equal(t, `{"accounts":[{"id":"`+id+`","tags":[]}]}`, ac)
@@ -27,7 +27,7 @@ func TestOANDA(t *testing.T) {
 	})
 
 	t.Run("ローソク足情報を取得できる", func(t *testing.T) {
-		oc := newOANDAClient(at, id)
+		oc := NewClient(at, id)
 		cs, err := oc.getCandles(context.TODO(), "USD_JPY")
 
 		// ローソク足情報はリアルタイムに変わっていくので、

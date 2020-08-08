@@ -1,4 +1,4 @@
-package main
+package oanda
 
 import (
 	"context"
@@ -11,16 +11,16 @@ import (
 
 const host = "https://api-fxpractice.oanda.com/v3"
 
-// oandaClient : OANDAクライアントの構造体
-type oandaClient struct {
+// Client : OANDAクライアントの構造体
+type Client struct {
 	httpClient  *http.Client
 	accessToken string
 	accountID   string
 }
 
-// newOANDAClient : OANDAクライアントを生成
-func newOANDAClient(accessToken, accountID string) *oandaClient {
-	return &oandaClient{
+// NewClient : OANDAクライアントを生成
+func NewClient(accessToken, accountID string) *Client {
+	return &Client{
 		httpClient:  http.DefaultClient,
 		accessToken: accessToken,
 		accountID:   accountID,
@@ -28,7 +28,7 @@ func newOANDAClient(accessToken, accountID string) *oandaClient {
 }
 
 // sendRequest : OANDA APIへのリクエスト用共通処理
-func (a oandaClient) sendRequest(ctx context.Context, path string) (*http.Response, error) {
+func (a Client) sendRequest(ctx context.Context, path string) (*http.Response, error) {
 	url := host + path
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
 	if err != nil {
@@ -44,7 +44,7 @@ func (a oandaClient) sendRequest(ctx context.Context, path string) (*http.Respon
 }
 
 // getAccount : アカウント情報を取得
-func (a oandaClient) getAccount(ctx context.Context) (string, error) {
+func (a Client) getAccount(ctx context.Context) (string, error) {
 	resp, err := a.sendRequest(ctx, "/accounts")
 	if err != nil {
 		return "", fmt.Errorf("sendRequest(ctx, \"/accounts\") > %w", err)
@@ -81,7 +81,7 @@ type (
 )
 
 // getCandle : ローソク足情報を取得
-func (a oandaClient) getCandles(ctx context.Context, instrument string) (*candleSticks, error) {
+func (a Client) getCandles(ctx context.Context, instrument string) (*candleSticks, error) {
 	type response struct {
 		Instrument  string       `json:"instrument"`
 		Granularity string       `json:"granularity"`
