@@ -32,13 +32,13 @@ func (a oandaClient) sendRequest(ctx context.Context, path string) (*http.Respon
 	url := host + path
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
 	if err != nil {
-		return nil, fmt.Errorf("リクエスト作成に失敗: %w", err)
+		return nil, fmt.Errorf("http.NewRequestWithContext(ctx, %s, %s, nil) > %w", http.MethodGet, url, err)
 	}
 	req.Header.Add("Authorization", "Bearer "+a.accessToken)
 
 	resp, err := a.httpClient.Do(req)
 	if err != nil {
-		return nil, fmt.Errorf("リクエスト実行に失敗: %w", err)
+		return nil, fmt.Errorf("http.Client.Do(%+v) > %w", req, err)
 	}
 	return resp, nil
 }
@@ -47,13 +47,13 @@ func (a oandaClient) sendRequest(ctx context.Context, path string) (*http.Respon
 func (a oandaClient) getAccount(ctx context.Context) (string, error) {
 	resp, err := a.sendRequest(ctx, "/accounts")
 	if err != nil {
-		return "", fmt.Errorf("リクエスト実行に失敗: %w", err)
+		return "", fmt.Errorf("sendRequest(ctx, \"/accounts\") > %w", err)
 	}
 	defer func() { _ = resp.Body.Close() }()
 
 	b, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		return "", fmt.Errorf("レスポンス読込に失敗: %w", err)
+		return "", fmt.Errorf("ioutil.ReadAll() > %w", err)
 	}
 	return string(b), nil
 }
@@ -91,18 +91,18 @@ func (a oandaClient) getCandles(ctx context.Context, instrument string) (*candle
 	path := fmt.Sprintf("/accounts/%s/instruments/%s/candles", a.accountID, instrument)
 	resp, err := a.sendRequest(ctx, path)
 	if err != nil {
-		return nil, fmt.Errorf("リクエスト実行に失敗: %w", err)
+		return nil, fmt.Errorf("sendRequest(ctx, \"%s\") > %w", path, err)
 	}
 	defer func() { _ = resp.Body.Close() }()
 
 	b, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		return nil, fmt.Errorf("レスポンス読込に失敗: %w", err)
+		return nil, fmt.Errorf("ioutil.ReadAll() > %w", err)
 	}
 
 	var r response
 	if err := json.Unmarshal(b, &r); err != nil {
-		return nil, fmt.Errorf("json.Unmarshal()に失敗: %w", err)
+		return nil, fmt.Errorf("json.Unmarshal(%s, response{}) > %w", string(b), err)
 	}
 	return &r.Candles, nil
 }
