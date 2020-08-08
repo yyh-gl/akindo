@@ -19,11 +19,12 @@ func TestAkindo(t *testing.T) {
 		assert.NotNil(t, a)
 	})
 
-	t.Run("check()仮テスト", func(t *testing.T) {
+	t.Run("judge()仮テスト", func(t *testing.T) {
 		oc := oanda.NewClient(at, id)
 		a := New(oc, "USD_JPY")
 
-		a.check()
+		got := a.judge()
+		assert.Equal(t, got, judgeResultWait)
 	})
 
 	t.Run("buy()仮テスト", func(t *testing.T) {
