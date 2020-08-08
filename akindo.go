@@ -7,11 +7,11 @@ type akindo struct {
 }
 
 // newAkindo : 商売人召喚
-func newAkindo(oc *oandaClient, instrument string) (*akindo, error) {
+func newAkindo(oc *oandaClient, instrument string) *akindo {
 	return &akindo{
 		oandaClient: oc,
 		instrument:  instrument,
-	}, nil
+	}
 }
 
 // check : 価格変動を確認
