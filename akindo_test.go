@@ -12,7 +12,7 @@ func TestAkindo(t *testing.T) {
 	var id = os.Getenv("ACCOUNT_ID")
 
 	t.Run("商売人を取得できる", func(t *testing.T) {
-		oc, _ := newOANDAClient(at, id)
+		oc := newOANDAClient(at, id)
 		a, err := newAkindo(oc, "USD_JPY")
 
 		assert.NotNil(t, a)
@@ -20,21 +20,21 @@ func TestAkindo(t *testing.T) {
 	})
 
 	t.Run("check()仮テスト", func(t *testing.T) {
-		oc, _ := newOANDAClient(at, id)
+		oc := newOANDAClient(at, id)
 		a, _ := newAkindo(oc, "USD_JPY")
 
 		a.check()
 	})
 
 	t.Run("buy()仮テスト", func(t *testing.T) {
-		oc, _ := newOANDAClient(at, id)
+		oc := newOANDAClient(at, id)
 		a, _ := newAkindo(oc, "USD_JPY")
 
 		a.buy()
 	})
 
 	t.Run("sell()仮テスト", func(t *testing.T) {
-		oc, _ := newOANDAClient(at, id)
+		oc := newOANDAClient(at, id)
 		a, _ := newAkindo(oc, "USD_JPY")
 
 		a.sell()
