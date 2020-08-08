@@ -1,6 +1,8 @@
 package akindo
 
 import (
+	"context"
+
 	"github.com/yyh-gl/fx-auto-trader/oanda"
 )
 
@@ -18,14 +20,26 @@ func New(oc *oanda.Client, instrument string) *Akindo {
 	}
 }
 
-//// GoToTrade : トレード開始
-//func (a Akindo) GoToTrade(ctx context.Context) error {
-//	for {
-//		a.check()
-//	}
-//
-//	return nil
-//}
+// GoToTrade : トレード開始
+func (a Akindo) GoToTrade(ctx context.Context) error {
+exitLoop:
+	for {
+		select {
+		case <-ctx.Done():
+			break exitLoop
+		default:
+		}
+
+		switch result := a.judge(); result {
+		case judgeResultBuy:
+			a.buy()
+		case judgeResultSell:
+			a.sell()
+		}
+	}
+
+	return nil
+}
 
 // judge : 価格変動を確認して次のアクションを決定
 func (a Akindo) judge() judgeResult {
