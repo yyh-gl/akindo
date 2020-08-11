@@ -1,6 +1,7 @@
 package akindo
 
 import (
+	"context"
 	"os"
 	"testing"
 
@@ -23,7 +24,7 @@ func TestAkindo(t *testing.T) {
 		oc := oanda.NewClient(at, id)
 		a := New(oc, "USD_JPY")
 
-		got := a.judge()
+		got := a.judge(context.Background())
 		assert.Equal(t, got, judgeResultWait)
 	})
 
@@ -31,13 +32,13 @@ func TestAkindo(t *testing.T) {
 		oc := oanda.NewClient(at, id)
 		a := New(oc, "USD_JPY")
 
-		a.buy()
+		a.buy(context.Background())
 	})
 
 	t.Run("sell()仮テスト", func(t *testing.T) {
 		oc := oanda.NewClient(at, id)
 		a := New(oc, "USD_JPY")
 
-		a.sell()
+		a.sell(context.Background())
 	})
 }
