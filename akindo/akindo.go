@@ -35,12 +35,12 @@ exitLoop:
 		default:
 		}
 
-		switch result := a.judge(); result {
+		switch result := a.judge(ctx); result {
 		case judgeResultBuy:
-			a.buy()
+			a.buy(ctx)
 			a.WriteTradeLog("Buy")
 		case judgeResultSell:
-			a.sell()
+			a.sell(ctx)
 			a.WriteTradeLog("Sell")
 		default:
 			a.WriteTradeLog("...")
@@ -52,12 +52,12 @@ exitLoop:
 }
 
 // judge : 価格変動を確認して次のアクションを決定
-func (a Akindo) judge() judgeResult {
+func (a Akindo) judge(ctx context.Context) judgeResult {
 	return judgeResultWait
 }
 
 // buy : 購入
-func (a Akindo) buy() {}
+func (a Akindo) buy(ctx context.Context) {}
 
 // sell : 売却
-func (a Akindo) sell() {}
+func (a Akindo) sell(ctx context.Context) {}
