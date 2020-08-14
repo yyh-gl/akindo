@@ -19,7 +19,7 @@ func newAdventureBookWriter() adventureBookWriter {
 		w = os.Stdout
 	}
 	return adventureBookWriter{
-		book: log.New(w, "Akindo", log.LstdFlags),
+		book: log.New(w, "[Akindo] ", log.LstdFlags),
 	}
 }
 
