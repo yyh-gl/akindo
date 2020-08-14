@@ -35,7 +35,7 @@ exitLoop:
 		default:
 		}
 
-		switch result := a.judge(ctx); result {
+		switch a.judge(ctx) {
 		case judgeResultBuy:
 			a.buy(ctx)
 			a.WriteTradeLog("Buy")
