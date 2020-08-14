@@ -106,3 +106,13 @@ func (c Client) getCandles(ctx context.Context, instrument string) (*candleStick
 	}
 	return &r.Candles, nil
 }
+
+// buy : 外貨を購入
+func (c Client) buy(ctx context.Context, instrument string, units int) error {
+	return nil
+}
+
+// sell : 外貨を売却
+func (c Client) sell(ctx context.Context, instrument string, units int) error {
+	return nil
+}
