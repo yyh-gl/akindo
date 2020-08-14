@@ -43,7 +43,7 @@ exitLoop:
 			a.sell(ctx)
 			a.WriteTradeLog("Sell")
 		default:
-			a.WriteTradeLog("...")
+			a.WriteTradeLog("Wait")
 		}
 	}
 
