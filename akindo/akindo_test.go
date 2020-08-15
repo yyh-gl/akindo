@@ -23,9 +23,11 @@ func TestAkindo(t *testing.T) {
 	t.Run("judge()仮テスト", func(t *testing.T) {
 		oc := oanda.NewClient(at, id)
 		a := New(oc, nil, "USD_JPY", 10)
+		gotResult, gotCandle := a.judge(context.Background())
 
-		got := a.judge(context.Background())
-		assert.Equal(t, got, judgeResultWait)
+		// 判定結果は毎回変わるのでとりあえず空じゃないことだけ確認
+		assert.NotEmpty(t, gotResult)
+		assert.NotEmpty(t, gotCandle)
 	})
 
 	t.Run("buy()仮テスト", func(t *testing.T) {
