@@ -42,12 +42,14 @@ func New(oc *oanda.Client, adventureBook *os.File, instrument string, unitsPerTr
 func (a *Akindo) GoToTrade(ctx context.Context) error {
 	a.save(actionPreparation, nil)
 
+	timer := time.NewTimer(0)
+
 exitLoop:
 	for {
 		select {
 		case <-ctx.Done():
 			break exitLoop
-		default:
+		case <-timer.C:
 		}
 
 		switch result, candleStick := a.judge(ctx); result {
@@ -64,7 +66,7 @@ exitLoop:
 			//a.save(actionWait)
 		}
 
-		time.Sleep(2 * time.Minute)
+		timer = time.NewTimer(2 * time.Minute)
 	}
 
 	//a.WriteTradeLog("Finish trade")
