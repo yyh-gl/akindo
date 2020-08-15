@@ -28,7 +28,7 @@ func NewClient(accessToken, accountID string) *Client {
 }
 
 // sendRequest : OANDA APIへのリクエスト用共通処理
-func (c Client) sendRequest(ctx context.Context, path string) (*http.Response, error) {
+func (c *Client) sendRequest(ctx context.Context, path string) (*http.Response, error) {
 	url := host + path
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
 	if err != nil {
@@ -44,7 +44,7 @@ func (c Client) sendRequest(ctx context.Context, path string) (*http.Response, e
 }
 
 // getAccount : アカウント情報を取得
-func (c Client) getAccount(ctx context.Context) (string, error) {
+func (c *Client) getAccount(ctx context.Context) (string, error) {
 	resp, err := c.sendRequest(ctx, "/accounts")
 	if err != nil {
 		return "", fmt.Errorf("sendRequest(ctx, \"/accounts\") > %w", err)
@@ -81,7 +81,7 @@ type (
 )
 
 // getCandle : ローソク足情報を取得
-func (c Client) getCandles(ctx context.Context, instrument string) (*candleSticks, error) {
+func (c *Client) getCandles(ctx context.Context, instrument string) (*candleSticks, error) {
 	type response struct {
 		Instrument  string       `json:"instrument"`
 		Granularity string       `json:"granularity"`
@@ -108,11 +108,11 @@ func (c Client) getCandles(ctx context.Context, instrument string) (*candleStick
 }
 
 // buy : 外貨を購入
-func (c Client) buy(ctx context.Context, instrument string, units int) error {
+func (c *Client) buy(ctx context.Context, instrument string, units int) error {
 	return nil
 }
 
 // sell : 外貨を売却
-func (c Client) sell(ctx context.Context, instrument string, units int) error {
+func (c *Client) sell(ctx context.Context, instrument string, units int) error {
 	return nil
 }

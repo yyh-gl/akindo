@@ -33,7 +33,7 @@ func New(oc *oanda.Client, adventureBook *os.File, instrument string, unitsPerTr
 }
 
 // GoToTrade : トレード開始
-func (a Akindo) GoToTrade(ctx context.Context) error {
+func (a *Akindo) GoToTrade(ctx context.Context) error {
 	a.save(actionPreparation)
 
 exitLoop:
@@ -61,19 +61,19 @@ exitLoop:
 }
 
 // judge : 価格変動を確認して次のアクションを決定
-func (a Akindo) judge(ctx context.Context) judgeResult {
+func (a *Akindo) judge(ctx context.Context) judgeResult {
 	return judgeResultWait
 }
 
 // buy : 購入
 // FIXME: レシーバをポインタ型にする
-func (a Akindo) buy(ctx context.Context) {}
+func (a *Akindo) buy(ctx context.Context) {}
 
 // sell : 売却
-func (a Akindo) sell(ctx context.Context) {}
+func (a *Akindo) sell(ctx context.Context) {}
 
 // save : 取引記録に書き込む
-func (a Akindo) save(action action) {
+func (a *Akindo) save(action action) {
 	now := time.Now().Format(time.RFC3339)
 
 	switch action {

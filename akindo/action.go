@@ -9,8 +9,8 @@ const (
 	actionTidyingUp
 )
 
-func (a action) String() string {
-	switch a {
+func (a *action) String() string {
+	switch *a {
 	case actionPreparation:
 		return "preparation"
 	case actionBuy:
