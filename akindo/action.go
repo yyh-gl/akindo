@@ -3,7 +3,8 @@ package akindo
 type action int
 
 const (
-	actionPreparation = iota + 1
+	actionNothing = iota + 1
+	actionPreparation
 	actionBuy
 	actionSell
 	actionTidyingUp

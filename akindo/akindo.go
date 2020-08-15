@@ -19,6 +19,8 @@ type Akindo struct {
 	instrument string
 	// 1回の取引でやりとりするユニット数
 	unitsPerTrade int
+	// 最後のアクション
+	lastAction action
 }
 
 // New : 商売人召喚
@@ -29,6 +31,7 @@ func New(oc *oanda.Client, adventureBook *os.File, instrument string, unitsPerTr
 		oandaClient:   oc,
 		instrument:    instrument,
 		unitsPerTrade: unitsPerTrade,
+		lastAction:    actionNothing,
 	}
 }
 
@@ -61,16 +64,31 @@ exitLoop:
 }
 
 // judge : 価格変動を確認して次のアクションを決定
+// TODO: 判定ロジックをNew()時に注入できるようにする
 func (a *Akindo) judge(ctx context.Context) judgeResult {
+	// TODO: エラーハンドリング
+	c, _ := a.oandaClient.GetLatestCandle(ctx, a.instrument)
+
+	mid := (c.Highest + c.Lowest) / 2
+	switch {
+	case c.IsBullish() && c.Open == c.Lowest && c.Closing <= mid:
+		return judgeResultSell
+	case c.IsBearish() && c.Closing == c.Highest && c.Open >= mid:
+		return judgeResultBuy
+	}
 	return judgeResultWait
 }
 
 // buy : 購入
 // FIXME: レシーバをポインタ型にする
-func (a *Akindo) buy(ctx context.Context) {}
+func (a *Akindo) buy(ctx context.Context) {
+	a.lastAction = actionBuy
+}
 
 // sell : 売却
-func (a *Akindo) sell(ctx context.Context) {}
+func (a *Akindo) sell(ctx context.Context) {
+	a.lastAction = actionSell
+}
 
 // save : 取引記録に書き込む
 func (a *Akindo) save(action action) {
