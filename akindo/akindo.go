@@ -2,30 +2,39 @@ package akindo
 
 import (
 	"context"
+	"encoding/csv"
+	"os"
+	"strconv"
+	"time"
 
 	"github.com/yyh-gl/fx-auto-trader/oanda"
 )
 
 // Akindo : 商売人を表す構造体
 type Akindo struct {
-	adventureBookWriter
-
+	*csv.Writer
 	oandaClient *oanda.Client
-	instrument  string
+
+	// 扱う通貨
+	instrument string
+	// 1回の取引でやりとりするユニット数
+	unitsPerTrade int
 }
 
 // New : 商売人召喚
-func New(oc *oanda.Client, instrument string) *Akindo {
+// 冒険の書のcloseを忘れずに！
+func New(oc *oanda.Client, adventureBook *os.File, instrument string, unitsPerTrade int) *Akindo {
 	return &Akindo{
-		oandaClient:         oc,
-		adventureBookWriter: newAdventureBookWriter(),
-		instrument:          instrument,
+		Writer:        csv.NewWriter(adventureBook),
+		oandaClient:   oc,
+		instrument:    instrument,
+		unitsPerTrade: unitsPerTrade,
 	}
 }
 
 // GoToTrade : トレード開始
 func (a Akindo) GoToTrade(ctx context.Context) error {
-	a.WriteTradeLog("Start trade")
+	a.save(actionPreparation)
 
 exitLoop:
 	for {
@@ -38,16 +47,16 @@ exitLoop:
 		switch a.judge(ctx) {
 		case judgeResultBuy:
 			a.buy(ctx)
-			a.WriteTradeLog("Buy")
+			a.save(actionBuy)
 		case judgeResultSell:
 			a.sell(ctx)
-			a.WriteTradeLog("Sell")
+			a.save(actionSell)
 		default:
-			a.WriteTradeLog("Wait")
+			//a.save(actionWait)
 		}
 	}
 
-	a.WriteTradeLog("Finish trade")
+	//a.WriteTradeLog("Finish trade")
 	return nil
 }
 
@@ -57,7 +66,24 @@ func (a Akindo) judge(ctx context.Context) judgeResult {
 }
 
 // buy : 購入
+// FIXME: レシーバをポインタ型にする
 func (a Akindo) buy(ctx context.Context) {}
 
 // sell : 売却
 func (a Akindo) sell(ctx context.Context) {}
+
+// save : 取引記録に書き込む
+func (a Akindo) save(action action) {
+	now := time.Now().Format(time.RFC3339)
+
+	switch action {
+	case actionPreparation:
+		// 準備アクションではヘッダー情報を書き込む
+		// TODO: エラーハンドリング
+		_ = a.Write([]string{"time", "action", "instrument", "units"})
+	default:
+		// TODO: エラーハンドリング
+		_ = a.Write([]string{now, action.String(), a.instrument, strconv.Itoa(a.unitsPerTrade)})
+	}
+	a.Flush()
+}

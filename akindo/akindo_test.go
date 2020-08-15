@@ -15,14 +15,14 @@ func TestAkindo(t *testing.T) {
 
 	t.Run("商売人を取得できる", func(t *testing.T) {
 		oc := oanda.NewClient(at, id)
-		a := New(oc, "USD_JPY")
+		a := New(oc, nil, "USD_JPY", 10)
 
 		assert.NotNil(t, a)
 	})
 
 	t.Run("judge()仮テスト", func(t *testing.T) {
 		oc := oanda.NewClient(at, id)
-		a := New(oc, "USD_JPY")
+		a := New(oc, nil, "USD_JPY", 10)
 
 		got := a.judge(context.Background())
 		assert.Equal(t, got, judgeResultWait)
@@ -30,14 +30,14 @@ func TestAkindo(t *testing.T) {
 
 	t.Run("buy()仮テスト", func(t *testing.T) {
 		oc := oanda.NewClient(at, id)
-		a := New(oc, "USD_JPY")
+		a := New(oc, nil, "USD_JPY", 10)
 
 		a.buy(context.Background())
 	})
 
 	t.Run("sell()仮テスト", func(t *testing.T) {
 		oc := oanda.NewClient(at, id)
-		a := New(oc, "USD_JPY")
+		a := New(oc, nil, "USD_JPY", 10)
 
 		a.sell(context.Background())
 	})
