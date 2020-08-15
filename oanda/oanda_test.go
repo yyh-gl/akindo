@@ -26,14 +26,14 @@ func TestOANDA(t *testing.T) {
 		assert.Nil(t, err)
 	})
 
-	t.Run("ローソク足情報を取得できる", func(t *testing.T) {
+	t.Run("ローソク足情報（複数）を取得できる", func(t *testing.T) {
 		oc := NewClient(at, id)
 		cs, err := oc.getCandles(context.TODO(), "USD_JPY")
 
 		// ローソク足情報はリアルタイムに変わっていくので、
 		// エラーが出ていないことおよび各フィールドが空でないことだけを確認
 		assert.Nil(t, err)
-		for _, c := range *cs {
+		for _, c := range cs {
 			//assert.NotEmpty(t, c.Complete) // Completeにはfalse（ゼロ値）が入ることがあるため確認しない
 			assert.NotEmpty(t, c.Volume)
 			assert.NotEmpty(t, c.Time)
@@ -42,6 +42,22 @@ func TestOANDA(t *testing.T) {
 			assert.NotEmpty(t, c.Prices.Lowest)
 			assert.NotEmpty(t, c.Prices.Closing)
 		}
+	})
+
+	t.Run("ローソク足情報（最新1件）を取得できる", func(t *testing.T) {
+		oc := NewClient(at, id)
+		c, err := oc.GetLatestCandle(context.TODO(), "USD_JPY")
+
+		// ローソク足情報はリアルタイムに変わっていくので、
+		// エラーが出ていないことおよび各フィールドが空でないことだけを確認
+		assert.Nil(t, err)
+		//assert.NotEmpty(t, c.Complete) // Completeにはfalse（ゼロ値）が入ることがあるため確認しない
+		assert.NotEmpty(t, c.Volume)
+		assert.NotEmpty(t, c.Time)
+		assert.NotEmpty(t, c.Prices.Open)
+		assert.NotEmpty(t, c.Prices.Highest)
+		assert.NotEmpty(t, c.Prices.Lowest)
+		assert.NotEmpty(t, c.Prices.Closing)
 	})
 
 	t.Run("外貨を購入できる", func(t *testing.T) {

@@ -81,7 +81,7 @@ type (
 )
 
 // getCandle : ローソク足情報を取得
-func (c *Client) getCandles(ctx context.Context, instrument string) (*candleSticks, error) {
+func (c *Client) getCandles(ctx context.Context, instrument string) (candleSticks, error) {
 	type response struct {
 		Instrument  string       `json:"instrument"`
 		Granularity string       `json:"granularity"`
@@ -104,7 +104,22 @@ func (c *Client) getCandles(ctx context.Context, instrument string) (*candleStic
 	if err := json.Unmarshal(b, &r); err != nil {
 		return nil, fmt.Errorf("json.Unmarshal(%s, response{}) > %w", string(b), err)
 	}
-	return &r.Candles, nil
+	return r.Candles, nil
+}
+
+// getLatestCandle : 最新のローソク足情報を1件取得
+func (c *Client) GetLatestCandle(ctx context.Context, instrument string) (*candleStick, error) {
+	cs, err := c.getCandles(ctx, instrument)
+	if err != nil {
+		return nil, fmt.Errorf("getCandles(Instrument: %s) > %w", instrument, err)
+	}
+
+	// 最後に取得したローソク足情報がfixしている場合はその情報を返却
+	// fixしていない場合は2つ前の情報を返却
+	if latest := cs[len(cs)-1]; latest.Complete {
+		return latest, nil
+	}
+	return cs[len(cs)-2], nil
 }
 
 // buy : 外貨を購入
