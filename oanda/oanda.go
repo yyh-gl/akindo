@@ -28,15 +28,15 @@ func NewClient(accessToken, accountID string) *Client {
 }
 
 // sendRequest : OANDA APIへのリクエスト用共通処理
-func (a Client) sendRequest(ctx context.Context, path string) (*http.Response, error) {
+func (c Client) sendRequest(ctx context.Context, path string) (*http.Response, error) {
 	url := host + path
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
 	if err != nil {
 		return nil, fmt.Errorf("http.NewRequestWithContext(ctx, %s, %s, nil) > %w", http.MethodGet, url, err)
 	}
-	req.Header.Add("Authorization", "Bearer "+a.accessToken)
+	req.Header.Add("Authorization", "Bearer "+c.accessToken)
 
-	resp, err := a.httpClient.Do(req)
+	resp, err := c.httpClient.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("http.Client.Do(%+v) > %w", req, err)
 	}
@@ -44,8 +44,8 @@ func (a Client) sendRequest(ctx context.Context, path string) (*http.Response, e
 }
 
 // getAccount : アカウント情報を取得
-func (a Client) getAccount(ctx context.Context) (string, error) {
-	resp, err := a.sendRequest(ctx, "/accounts")
+func (c Client) getAccount(ctx context.Context) (string, error) {
+	resp, err := c.sendRequest(ctx, "/accounts")
 	if err != nil {
 		return "", fmt.Errorf("sendRequest(ctx, \"/accounts\") > %w", err)
 	}
@@ -81,15 +81,15 @@ type (
 )
 
 // getCandle : ローソク足情報を取得
-func (a Client) getCandles(ctx context.Context, instrument string) (*candleSticks, error) {
+func (c Client) getCandles(ctx context.Context, instrument string) (*candleSticks, error) {
 	type response struct {
 		Instrument  string       `json:"instrument"`
 		Granularity string       `json:"granularity"`
 		Candles     candleSticks `json:"candles"`
 	}
 
-	path := fmt.Sprintf("/accounts/%s/instruments/%s/candles", a.accountID, instrument)
-	resp, err := a.sendRequest(ctx, path)
+	path := fmt.Sprintf("/accounts/%s/instruments/%s/candles", c.accountID, instrument)
+	resp, err := c.sendRequest(ctx, path)
 	if err != nil {
 		return nil, fmt.Errorf("sendRequest(ctx, \"%s\") > %w", path, err)
 	}
@@ -105,4 +105,14 @@ func (a Client) getCandles(ctx context.Context, instrument string) (*candleStick
 		return nil, fmt.Errorf("json.Unmarshal(%s, response{}) > %w", string(b), err)
 	}
 	return &r.Candles, nil
+}
+
+// buy : 外貨を購入
+func (c Client) buy(ctx context.Context, instrument string, units int) error {
+	return nil
+}
+
+// sell : 外貨を売却
+func (c Client) sell(ctx context.Context, instrument string, units int) error {
+	return nil
 }
