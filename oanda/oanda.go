@@ -6,7 +6,10 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"strconv"
 	"time"
+
+	"github.com/yyh-gl/fx-auto-trader/akindo"
 )
 
 const host = "https://api-fxpractice.oanda.com/v3"
@@ -59,33 +62,30 @@ func (c *Client) getAccount(ctx context.Context) (string, error) {
 }
 
 type (
-	// candleStick : ローソク足を表す構造体
+	// candleStickDTO : OANDA APIからもらったローソク足情報を受け取るためのDTO
 	// https://developer.oanda.com/rest-live-v20/instrument-df/#Candlestick
-	candleStick struct {
+	candleStickDTO struct {
 		Complete bool      `json:"complete"`
 		Volume   int       `json:"volume"`
 		Time     time.Time `json:"time"`
-		Prices   prices    `json:"mid"`
+		Prices   struct {
+			Open    string `json:"o"`
+			Highest string `json:"h"`
+			Lowest  string `json:"l"`
+			Closing string `json:"c"`
+		} `json:"mid"`
 	}
 
-	// prices : ローソク足情報内の価格情報を表す構造体
-	prices struct {
-		Open    string `json:"o"`
-		Highest string `json:"h"`
-		Lowest  string `json:"l"`
-		Closing string `json:"c"`
-	}
-
-	// candleSticks : ローソク足の集合を表す構造体
-	candleSticks []*candleStick
+	// candleSticksDTO : OANDA APIからもらったローソク足情報の集合を受け取るためのDTO
+	candleSticksDTO []*candleStickDTO
 )
 
 // getCandle : ローソク足情報を取得
-func (c *Client) getCandles(ctx context.Context, instrument string) (candleSticks, error) {
+func (c *Client) getCandles(ctx context.Context, instrument string) (akindo.CandleSticks, error) {
 	type response struct {
-		Instrument  string       `json:"instrument"`
-		Granularity string       `json:"granularity"`
-		Candles     candleSticks `json:"candles"`
+		Instrument  string          `json:"instrument"`
+		Granularity string          `json:"granularity"`
+		Candles     candleSticksDTO `json:"candles"`
 	}
 
 	path := fmt.Sprintf("/accounts/%s/instruments/%s/candles", c.accountID, instrument)
@@ -104,11 +104,39 @@ func (c *Client) getCandles(ctx context.Context, instrument string) (candleStick
 	if err := json.Unmarshal(b, &r); err != nil {
 		return nil, fmt.Errorf("json.Unmarshal(%s, response{}) > %w", string(b), err)
 	}
-	return r.Candles, nil
+
+	var cs akindo.CandleSticks
+	for _, c := range r.Candles {
+		o, err := strconv.ParseFloat(c.Prices.Open, 64)
+		if err != nil {
+			return nil, fmt.Errorf("strconv.ParseFloat(OpenPrice: %s) > %w", c.Prices.Open, err)
+		}
+		h, err := strconv.ParseFloat(c.Prices.Highest, 64)
+		if err != nil {
+			return nil, fmt.Errorf("strconv.ParseFloat(HighestPrice: %s) > %w", c.Prices.Highest, err)
+		}
+		l, err := strconv.ParseFloat(c.Prices.Lowest, 64)
+		if err != nil {
+			return nil, fmt.Errorf("strconv.ParseFloat(LowestPrice: %s) > %w", c.Prices.Lowest, err)
+		}
+		cl, err := strconv.ParseFloat(c.Prices.Closing, 64)
+		if err != nil {
+			return nil, fmt.Errorf("strconv.ParseFloat(ClosingPrice: %s) > %w", c.Prices.Closing, err)
+		}
+
+		cs = append(cs, &akindo.CandleStick{
+			Complete: c.Complete,
+			Open:     o,
+			Highest:  h,
+			Lowest:   l,
+			Closing:  cl,
+		})
+	}
+	return cs, nil
 }
 
 // getLatestCandle : 最新のローソク足情報を1件取得
-func (c *Client) GetLatestCandle(ctx context.Context, instrument string) (*candleStick, error) {
+func (c *Client) GetLatestCandle(ctx context.Context, instrument string) (*akindo.CandleStick, error) {
 	cs, err := c.getCandles(ctx, instrument)
 	if err != nil {
 		return nil, fmt.Errorf("getCandles(Instrument: %s) > %w", instrument, err)

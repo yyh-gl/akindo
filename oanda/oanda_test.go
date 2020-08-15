@@ -35,12 +35,10 @@ func TestOANDA(t *testing.T) {
 		assert.Nil(t, err)
 		for _, c := range cs {
 			//assert.NotEmpty(t, c.Complete) // Completeにはfalse（ゼロ値）が入ることがあるため確認しない
-			assert.NotEmpty(t, c.Volume)
-			assert.NotEmpty(t, c.Time)
-			assert.NotEmpty(t, c.Prices.Open)
-			assert.NotEmpty(t, c.Prices.Highest)
-			assert.NotEmpty(t, c.Prices.Lowest)
-			assert.NotEmpty(t, c.Prices.Closing)
+			assert.NotEmpty(t, c.Open)
+			assert.NotEmpty(t, c.Highest)
+			assert.NotEmpty(t, c.Lowest)
+			assert.NotEmpty(t, c.Closing)
 		}
 	})
 
@@ -52,12 +50,10 @@ func TestOANDA(t *testing.T) {
 		// エラーが出ていないことおよび各フィールドが空でないことだけを確認
 		assert.Nil(t, err)
 		//assert.NotEmpty(t, c.Complete) // Completeにはfalse（ゼロ値）が入ることがあるため確認しない
-		assert.NotEmpty(t, c.Volume)
-		assert.NotEmpty(t, c.Time)
-		assert.NotEmpty(t, c.Prices.Open)
-		assert.NotEmpty(t, c.Prices.Highest)
-		assert.NotEmpty(t, c.Prices.Lowest)
-		assert.NotEmpty(t, c.Prices.Closing)
+		assert.NotEmpty(t, c.Open)
+		assert.NotEmpty(t, c.Highest)
+		assert.NotEmpty(t, c.Lowest)
+		assert.NotEmpty(t, c.Closing)
 	})
 
 	t.Run("外貨を購入できる", func(t *testing.T) {
