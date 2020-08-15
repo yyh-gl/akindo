@@ -58,7 +58,7 @@ func TestOANDA(t *testing.T) {
 
 	t.Run("外貨を購入できる", func(t *testing.T) {
 		oc := NewClient(at, id)
-		err := oc.buy(context.TODO(), "USD_JPY", 5)
+		err := oc.Buy(context.TODO(), "USD_JPY", 5)
 
 		assert.Nil(t, err)
 		// TODO: 残高確認
@@ -66,7 +66,7 @@ func TestOANDA(t *testing.T) {
 
 	t.Run("外貨を売却できる", func(t *testing.T) {
 		oc := NewClient(at, id)
-		err := oc.sell(context.TODO(), "USD_JPY", 5)
+		err := oc.Sell(context.TODO(), "USD_JPY", 5)
 
 		assert.Nil(t, err)
 		// TODO: 残高確認

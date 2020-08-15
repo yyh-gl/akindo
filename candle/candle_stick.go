@@ -1,4 +1,6 @@
-package akindo
+package candle
+
+import "fmt"
 
 type (
 	// CandleStick : ローソク足情報を表す構造体
@@ -13,6 +15,10 @@ type (
 	// CandleSticks : ローソク足情報の集合を表す構造体
 	CandleSticks []*CandleStick
 )
+
+func (c *CandleStick) String() string {
+	return fmt.Sprintf("Open: %f / Highest: %f / Lowest: %f / Closing: %f", c.Open, c.Highest, c.Lowest, c.Closing)
+}
 
 // IsBullish : 陽線であるかどうか判定
 func (c *CandleStick) IsBullish() bool {

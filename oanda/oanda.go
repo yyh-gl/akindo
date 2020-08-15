@@ -9,7 +9,7 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/yyh-gl/fx-auto-trader/akindo"
+	"github.com/yyh-gl/fx-auto-trader/candle"
 )
 
 const host = "https://api-fxpractice.oanda.com/v3"
@@ -81,14 +81,14 @@ type (
 )
 
 // getCandle : ローソク足情報を取得
-func (c *Client) getCandles(ctx context.Context, instrument string) (akindo.CandleSticks, error) {
+func (c *Client) getCandles(ctx context.Context, instrument string) (candle.CandleSticks, error) {
 	type response struct {
 		Instrument  string          `json:"instrument"`
 		Granularity string          `json:"granularity"`
 		Candles     candleSticksDTO `json:"candles"`
 	}
 
-	path := fmt.Sprintf("/accounts/%s/instruments/%s/candles", c.accountID, instrument)
+	path := fmt.Sprintf("/accounts/%s/instruments/%s/candles?granularity=M2", c.accountID, instrument)
 	resp, err := c.sendRequest(ctx, path)
 	if err != nil {
 		return nil, fmt.Errorf("sendRequest(ctx, \"%s\") > %w", path, err)
@@ -105,7 +105,7 @@ func (c *Client) getCandles(ctx context.Context, instrument string) (akindo.Cand
 		return nil, fmt.Errorf("json.Unmarshal(%s, response{}) > %w", string(b), err)
 	}
 
-	var cs akindo.CandleSticks
+	var cs candle.CandleSticks
 	for _, c := range r.Candles {
 		o, err := strconv.ParseFloat(c.Prices.Open, 64)
 		if err != nil {
@@ -124,7 +124,7 @@ func (c *Client) getCandles(ctx context.Context, instrument string) (akindo.Cand
 			return nil, fmt.Errorf("strconv.ParseFloat(ClosingPrice: %s) > %w", c.Prices.Closing, err)
 		}
 
-		cs = append(cs, &akindo.CandleStick{
+		cs = append(cs, &candle.CandleStick{
 			Complete: c.Complete,
 			Open:     o,
 			Highest:  h,
@@ -136,7 +136,7 @@ func (c *Client) getCandles(ctx context.Context, instrument string) (akindo.Cand
 }
 
 // getLatestCandle : 最新のローソク足情報を1件取得
-func (c *Client) GetLatestCandle(ctx context.Context, instrument string) (*akindo.CandleStick, error) {
+func (c *Client) GetLatestCandle(ctx context.Context, instrument string) (*candle.CandleStick, error) {
 	cs, err := c.getCandles(ctx, instrument)
 	if err != nil {
 		return nil, fmt.Errorf("getCandles(Instrument: %s) > %w", instrument, err)
@@ -151,11 +151,13 @@ func (c *Client) GetLatestCandle(ctx context.Context, instrument string) (*akind
 }
 
 // buy : 外貨を購入
-func (c *Client) buy(ctx context.Context, instrument string, units int) error {
+func (c *Client) Buy(ctx context.Context, instrument string, units int) error {
+	fmt.Println("buy")
 	return nil
 }
 
 // sell : 外貨を売却
-func (c *Client) sell(ctx context.Context, instrument string, units int) error {
+func (c *Client) Sell(ctx context.Context, instrument string, units int) error {
+	fmt.Println("sell")
 	return nil
 }
