@@ -18,7 +18,7 @@ type Akindo struct {
 	*csv.Writer
 	oandaClient *oanda.Client
 
-	// 扱う通貨
+	// 取引対象の通貨
 	instrument string
 	// 1回の取引でやりとりするユニット数
 	unitsPerTrade int
@@ -66,7 +66,7 @@ exitLoop:
 			//a.save(actionWait)
 		}
 
-		timer = time.NewTimer(2 * time.Minute)
+		timer = time.NewTimer(1 * time.Hour)
 	}
 
 	//a.WriteTradeLog("Finish trade")
@@ -81,10 +81,20 @@ func (a *Akindo) judge(ctx context.Context) (judgeResult, *candle.CandleStick) {
 
 	mid := (c.Highest + c.Lowest) / 2
 	switch {
-	case c.IsBullish() && c.Open == c.Lowest && c.Closing <= mid:
-		return judgeResultSell, c
-	case c.IsBearish() && c.Closing == c.Highest && c.Open >= mid:
-		return judgeResultBuy, c
+	case c.IsBullish(): // 陽線の場合の転換点で売却
+		if c.Open <= c.Lowest+0.01 && c.Closing <= mid {
+			return judgeResultSell, c
+		}
+		if c.Highest-c.Lowest <= 0.07 {
+			return judgeResultSell, c
+		}
+	case c.IsBearish(): // 陰線の場合の転換点で購入
+		if c.Open >= c.Highest-0.01 && c.Closing >= mid {
+			return judgeResultBuy, c
+		}
+		if c.Highest-c.Lowest <= 0.07 {
+			return judgeResultBuy, c
+		}
 	}
 	return judgeResultWait, c
 }

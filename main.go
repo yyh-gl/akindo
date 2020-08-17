@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/yyh-gl/fx-auto-trader/akindo"
+
 	"github.com/yyh-gl/fx-auto-trader/oanda"
 )
 
@@ -23,10 +24,10 @@ func main() {
 	at := os.Getenv("API_ACCESS_TOKEN")
 	id := os.Getenv("ACCOUNT_ID")
 	oc := oanda.NewClient(at, id)
-	a := akindo.New(oc, f, "USD_JPY", 10)
+	a := akindo.New(oc, f, "USD_JPY", 100)
 
 	// contextによって実行時間を指定
-	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Hour)
 	if err := a.GoToTrade(ctx); err != nil {
 		l.Fatal(err)
 	}
